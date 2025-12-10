@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+    </marker>
+    <style>
+      .box { fill: #f7f9fb; stroke: #333; stroke-width: 1.5px; rx:6; }
+      .title { font: bold 14px sans-serif; fill: #111 }
+      .attr { font: 12px sans-serif; fill: #222 }
+      .note { font: italic 12px sans-serif; fill: #444 }
+      .link { stroke: #333; stroke-width: 1.2px; fill: none; }
+    </style>
+  </defs>
+
+  <!-- User -->
+  <g id="User" transform="translate(40,40)">
+    <rect class="box" width="320" height="140"></rect>
+    <text class="title" x="16" y="28">User</text>
+    <text class="attr" x="16" y="50">- _id: ObjectId</text>
+    <text class="attr" x="16" y="68">- name: String</text>
+    <text class="attr" x="16" y="86">- email: String (unique)</text>
+    <text class="attr" x="16" y="104">- password: String (hashed)</text>
+    <text class="attr" x="16" y="122">- cartData: Object {productId: {size: qty}}</text>
+  </g>
+
+  <!-- Product -->
+  <g id="Product" transform="translate(840,40)">
+    <rect class="box" width="320" height="180"></rect>
+    <text class="title" x="16" y="28">Product</text>
+    <text class="attr" x="16" y="50">- _id: ObjectId</text>
+    <text class="attr" x="16" y="68">- name: String</text>
+    <text class="attr" x="16" y="86">- description: String</text>
+    <text class="attr" x="16" y="104">- price: Number</text>
+    <text class="attr" x="16" y="122">- images: [String]</text>
+    <text class="attr" x="16" y="140">- category / subCategory: String</text>
+    <text class="attr" x="16" y="158">- size: [String], bestseller: Boolean</text>
+  </g>
+
+  <!-- Order -->
+  <g id="Order" transform="translate(360,360)">
+    <rect class="box" width="480" height="160"></rect>
+    <text class="title" x="16" y="28">Order</text>
+    <text class="attr" x="16" y="50">- _id: ObjectId</text>
+    <text class="attr" x="16" y="68">- userId: String (use ObjectId ref suggested)</text>
+    <text class="attr" x="16" y="86">- items: [ { productId, name, price, quantity, size } ]</text>
+    <text class="attr" x="16" y="104">- amount: Number</text>
+    <text class="attr" x="16" y="122">- address: Object, status: String, payment: Boolean</text>
+    <text class="note" x="16" y="142">(date stored as timestamp number)</text>
+  </g>
+
+  <!-- Cart (conceptual) -->
+  <g id="Cart" transform="translate(40,220)">
+    <rect class="box" width="320" height="80" fill="#fff8e6"></rect>
+    <text class="title" x="16" y="28">Cart (embedded)</text>
+    <text class="attr" x="16" y="50">- stored in User.cartData (map productId → sizes → qty)</text>
+  </g>
+
+  <!-- PaymentGateway (conceptual) -->
+  <g id="Payment" transform="translate(840,280)">
+    <rect class="box" width="320" height="100" fill="#eef7ff"></rect>
+    <text class="title" x="16" y="28">PaymentGateway</text>
+    <text class="attr" x="16" y="50">- Stripe integration (create session, verify)</text>
+    <text class="attr" x="16" y="70">- Razorpay integration (create/fetch orders)</text>
+  </g>
+
+  <!-- Links / Relations -->
+  <!-- User 1..* Order -->
+  <path class="link" d="M 200 180 L 600 360" marker-end="url(#arrow)" />
+  <text class="note" x="420" y="290">1..* (User creates Orders)</text>
+
+  <!-- Order * .. * Product (via items array, aggregation) -->
+  <path class="link" d="M 840 440 L 1000 220" marker-end="url(#arrow)" />
+  <path class="link" d="M 840 460 L 1000 260" marker-end="url(#arrow)" />
+  <text class="note" x="760" y="320">Order contains items[] (snapshots) → Product referenced by productId</text>
+
+  <!-- User.cartData -> Product (dependency) -->
+  <path class="link" d="M 360 200 L 840 200" marker-end="url(#arrow)" />
+  <text class="note" x="420" y="190">cartData map references Product IDs</text>
+
+  <!-- Order -> PaymentGateway (uses) -->
+  <path class="link" d="M 720 420 L 840 340" marker-end="url(#arrow)" />
+  <text class="note" x="740" y="370">Order → PaymentGateway (Stripe/Razorpay)</text>
+
+  <!-- Controller notes -->
+  <g transform="translate(40,540)">
+    <rect x="0" y="0" width="1120" height="120" fill="#ffffff" stroke="#ddd" rx="6"></rect>
+    <text class="title" x="16" y="24">Controllers / Behavior</text>
+    <text class="attr" x="16" y="46">- UserController: registerUser(), loginUser(), adminLogin()</text>
+    <text class="attr" x="16" y="66">- CartController: addToCart(), updateCart(), getUserCart() — operates on User.cartData</text>
+    <text class="attr" x="16" y="86">- ProductController: addProduct(), removeProduct(), listProducts(), singleProduct()</text>
+    <text class="attr" x="16" y="106">- OrderController: playOrder(), playOrderStripe(), playOrderRazorpay(), verify*, updateStatus(), userOrders(), allOrders()</text>
+  </g>
+
+</svg>

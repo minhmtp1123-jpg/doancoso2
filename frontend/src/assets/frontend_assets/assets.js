@@ -77,6 +77,8 @@ import cross_icon from './cross_icon.png'
 export const assets = {
     logo,
     hero_img,
+    p_img11,
+    p_img12,
     cart_icon,
     dropdown_icon,
     exchange_icon,
