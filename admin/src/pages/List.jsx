@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
 
+// eslint-disable-next-line no-unused-vars
 const List = ({ token }) => {
 
   const [list, setList] = useState([])
@@ -28,6 +29,9 @@ const List = ({ token }) => {
   const removeProduct = async (id) => {
     try {
 
+      // ask for confirmation before deleting
+      if (!window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+
       const token = localStorage.getItem('token') || '';
       const response = await axios.post(
         backendUrl + '/api/product/remove',
@@ -41,7 +45,8 @@ const List = ({ token }) => {
 
       if (response.data.success) {
         toast.success(response.data.message)
-        await fetchList();
+        // update UI locally without refetch
+        setList(prev => prev.filter(item => item._id !== id));
 
       } else {
         toast.error(response.data.message);
@@ -82,7 +87,14 @@ const List = ({ token }) => {
               <p>{item.name}</p>
               <p>{item.category}</p>
               <p>{currency}{item.price}</p>
-              <p onClick={() => removeProduct(item._id)} className='text-center md:text cursor-pointer text-lg'>X</p>
+              <button
+                onClick={() => removeProduct(item._id)}
+                className='text-center md:text cursor-pointer text-lg text-red-600 hover:text-red-800'
+                aria-label={`Xóa ${item.name}`}
+                title='Xóa'
+              >
+                ✖
+              </button>
             </div>
           ))
         }

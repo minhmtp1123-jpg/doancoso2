@@ -4,6 +4,7 @@ import axios from 'axios'
 import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
 
+// eslint-disable-next-line no-unused-vars
 const Add = ({ token }) => {
 
   const [image1, setImage1] = useState(false)
